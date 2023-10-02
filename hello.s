@@ -1,17 +1,20 @@
-.section .data
-	message: .asciz "Hello World\n"
+.data
+	message:	.ascii	"Hello World\n"
+	message_len:	.word	12
+	name:		.space	40
+	name_len:	.word	40
 
-.section .text
-	.global __start
-
-__start:
-	li $v0, 4004
-	li $a0, 2
-	la $a1, message
-	li $a2, 13
+.text
+main:
+	li $v0, 1
+	li $a0, 1234
+	syscall
+	
+	li $v0, 11
+	li $a0, 0xA
 	syscall
 
-	li $v0, 4001
-	li $a0, 13
+	; li $v0, 10
+	li $v0, 17
+	li $a0, 5
 	syscall
-
