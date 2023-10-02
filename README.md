@@ -1,56 +1,54 @@
-# MIPS
+# MIPS Programming (using SPIM)
 
-## Dialects
-
-<https://www.linux-mips.org/wiki/WhatsWrongWithO32N32N64>
-
- - o32: For 32-bit CPU's
- - n32: For 64-bit CPU's, uses 32-bit addresses, supports long integers
- - n64: For 64-bit CPU's, uses 64-bit addresses, supports long integers
-
-## Development Environment Setup
+# Development Environment Setup
 
 ### Linux
 
 ```sh
-sudo apt install gcc-mips-linux-gnu
-sudo apt install qemu
-sudo apt install qemu-user
+sudo apt install spim
 ```
 
 ## Compiling and Running MIPS programs
-
-### Compiling
-
 ```sh
-mips-linux-gnu-as hello.s -o build/hello.o
-mips-linux-gnu-gcc build/hello.o -o build/hello -nostdlib -static
-```
-
-### Running
-
-```sh
-qemu-mips build/hello
-# Print exit code
-echo $?
+$		spim
+(spim)		load "hello.s"
+(spim)		run
+(spim)		run
+(spim)		print $a0
+(spim)		
+(spim)		reinitialize
+(spim)		load "hello.s"
+(spim)		run
+(spim)
+(spim)		exit
+$
 ```
 
 ## Syscalls
-<https://syscalls.w3challs.com/?arch=mips_o32>
+<https://courses.missouristate.edu/kenvollmar/mars/help/syscallhelp.html>
 
 Residence of values:
 
-|  System Call Code   |                    Parameters                  |
-| :-----------------: | :--------------------------------------------: |
-|        `$v0`        |            `$a0`, `$a1`, `$a2`, `$a3`          |
+|   System Call Code    |                    Parameters                   |
+| :-------------------: | :---------------------------------------------: |
+|          $v0          | Integers: $a0 - $a3; Floats/Doubles: $f0 - $f12 |
 
 Some system call codes:
 
-| `$v0` | System call |   `$a0`   |     `$a1`     |   `$a2`  |  `$a3`  |
-| ----: | :---------- | :-------: | :-----------: | :------: | :-----: |
-|  4001 | exit        | `int`     |       -       |     -    |    -    |
-|  4003 | read        | `uint fd` |    `char*`    | `size_t` |    -    |
-|  4004 | write       | `uint fd` | `char const*` | `size_t` |    -    |
+| `$v0` |  System call  |                    Parameters                   | Return Value |
+| ----: | :------------ | :---------------------------------------------- | :----------: |
+|    10 | exit          |                         -                       |       -      |
+|    17 | exit2         | int $a0 (return value ignored by MARS)          |       -      |
+|     1 | print integer | int $a0                                         |       -      |
+|     2 | print float   | float $f12                                      |       -      |
+|     3 | print double  | double $f12                                     |       -      |
+|     4 | print string  | null-terminated string (NTS) address $a0        |       -      |
+|    11 | print char    | char $a0                                        |       -      |
+|     5 | read integer  |                         -                       | int $v0      |
+|     6 | read float    |                         -                       | float $f0    |
+|     7 | read double   |                         -                       | double $f0   |
+|     8 | read string   | buffer string address $a0, `size_t` $a1         | NTS addr $a0 |
+|    12 | read char     |                         -                       | char $v0     |
 
 ## File Descriptors (fd)
 
