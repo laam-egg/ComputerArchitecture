@@ -1,62 +1,84 @@
 .data
-	i:	.word	0
-	N:	.word	100
-	sum:	.word	0
-	prompt:	.asciiz "Input element #"
+	prompt:		.asciiz	"Input element #"
+	prompt2:		.asciiz ": "
+	N:		.word	100 # 100 integers
+	A:		.space	400 # 4 bytes * 100 integers
+	response:	.asciiz "The sum of the inputted elements are: "
 
 .text
-main:
-loop:
-	lw $t0, i
-	beq $t0, 10, end_loop
+#################
+## ENTRY POINT ##
+#################
 
-	jal input_and_process_A_i
-
-	lw $t0, i
-	addi $t0, $t0, 1
-	sw $t0, i
-	j loop
-
-end_loop:
-	li $v0, 1
-	lw $a0, sum
-	syscall
-
-	li $v0, 11
-	li $a0, 10 # linefeed
-	syscall
-
-end_main:
+_start:
+	jal input
+	jal output
+	
 	li $v0, 10
 	syscall
 
-# Functions
+######################
+## FUNCTION: output ##
+######################
 
-input_and_process_A_i:
-	# Print: Input element #{i}:
+output:
+	li $s0, 0	# i
+	li $s2, 0	# sum
+	la $t0, A
+	la $s3, N
+	lw $s3, 0($s3)	# N
+
+output_loop:
+	lw $s1, 0($t0)
+	add $s2, $s2, $s1
+	
+	addi $t0, $t0, 4
+	addi $s0, $s0, 1
+	bne $s0, $s3, output_loop
+	
+output_loop_end:
+	li $v0, 4
+	la $a0, response
+	syscall
+	
+	li $v0, 1
+	move $a0, $s2
+	syscall
+	
+	jr $ra
+
+#####################
+## FUNCTION: input ##
+#####################
+
+input:
+	li $s0, 0
+	la $t0, A
+	la $s3, N
+	lw $s3, 0($s3)
+
+input_loop:
+	# Print the prompt
 	li $v0, 4
 	la $a0, prompt
 	syscall
-
+	
 	li $v0, 1
-	lw $a0, i
+	move $a0, $s0
 	syscall
-
-	li $v0, 11
-	li $a0, 58 # colon ':'
+	
+	li $v0, 4
+	la $a0, prompt2
 	syscall
-
-	li $v0, 11
-	li $a0, 32 # space ' '
-	syscall
-
-	# Read A[i]
+	
 	li $v0, 5
 	syscall
+	
+	sw $v0, 0($t0)
+	
+	addi $t0, $t0, 4
+	addi $s0, $s0, 1
+	bne $s0, $s3, input_loop
 
-	# Accumulate to sum
-	lw $t0, sum
-	add $t0, $t0, $v0
-	sw $t0, sum
-
+input_loop_end:
 	jr $ra
