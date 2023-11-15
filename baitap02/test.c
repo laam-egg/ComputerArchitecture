@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
 		}
 		sprintf(actualOutputFileName, "%s%s", outputFileName, actualOutputExtension);
 
-		char const cmdRunFormat[] = "cat \"%s\" | \"%s\" > \"%s\"";
+		char const cmdRunFormat[] = "cat \"%s\" | \"%s\" > \"%s\" 2>/dev/null";
 		size_t cmdRunLength = strlen(cmdRunFormat)
 			- 2 + strlen(inputFileName)
 			- 2 + executableFileNameLength

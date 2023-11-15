@@ -1,6 +1,6 @@
 .section .data
 	prompt:
-	.asciz "" # "Program to output the first N Fibonacci numbers\nEnter n: "
+	.asciz "Program to output the first N Fibonacci numbers\nEnter n: "
 	
 	inputFormat:
 	.asciz	"%d"
@@ -20,8 +20,9 @@
 .section .text
 	.globl _start
 _start:
-	mov $prompt, %rdi
-	call printf
+	mov $prompt, %rsi
+	mov stderr, %rdi
+	call fprintf
 
 	mov $inputFormat, %rdi
 	mov $N, %rsi
@@ -62,6 +63,10 @@ while_N_greater_than_or_equal_0:
 	jmp while_N_greater_than_or_equal_0
 
 _exit:
+	# Print out a newline
+	mov $10, %rdi
+	call putchar
+	# Exit gracefully
 	xor %rdi, %rdi
 	call exit
 
