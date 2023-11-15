@@ -1,19 +1,67 @@
 .section .data
-	msg:
-		.asciz	"Hello, World !\n"
-	msg_len:
-		.int 15
+	prompt:
+	.asciz "" # "Program to output the first N Fibonacci numbers\nEnter n: "
+	
+	inputFormat:
+	.asciz	"%d"
+
+	outputOneNumberFormat:
+	.asciz	"%d "
+	
+	N:
+	.int	0
+
+	prev2:
+	.int	0
+
+	prev1:
+	.int	1
 
 .section .text
 	.globl _start
 _start:
-	mov $1, %rax
-	mov $1, %rdi
-	mov $msg, %rsi
-	mov msg_len, %rdx
-	syscall
+	mov $prompt, %rdi
+	call printf
 
-	mov $60, %rax
-	mov $0, %rdi
-	syscall
+	mov $inputFormat, %rdi
+	mov $N, %rsi
+	call scanf
+
+	cmpl $0, N
+	jle _exit
+
+	# The next 4 lines: output "0 " (0 with a space)
+	mov $48, %rdi
+	call putchar
+	mov $32, %rdi
+	call putchar
+
+	cmpl $1, N
+	jne case_N_greater_than_or_equal_2
+	jmp _exit
+
+case_N_greater_than_or_equal_2:
+	mov N, %r10
+	sub $2, %r10
+	mov %r10, N
+while_N_greater_than_or_equal_0:
+	cmpl $0, N
+	jl _exit
+	mov prev1, %rsi
+	mov $outputOneNumberFormat, %rdi
+	call printf
+	
+	# t = prev2; prev2 = prev1; prev1 += t
+	mov prev2, %r8
+	mov prev1, %r9
+	mov %r9, prev2
+	add %r8, %r9
+	mov %r9, prev1
+
+	decl N
+	jmp while_N_greater_than_or_equal_0
+
+_exit:
+	xor %rdi, %rdi
+	call exit
 
